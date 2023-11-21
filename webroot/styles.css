@@ -1,0 +1,13 @@
+@font-face {
+    font-family: "Font";
+    src: url('font.ttf') format('truetype');
+}
+
+label, input, button {
+    display: block;
+    margin: 10px 0;
+}
+
+#response {
+    margin-top: 20px;
+}

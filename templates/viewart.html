@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% block main %}
+<h1>Artists</h1>
+    <table border="1">
+        <tr>
+            <th>Artist ID</th>
+            <th>Artist Surname</th>
+            <th>Artist Initial</th>
+        </tr>
+        {% for artist in artists %}
+            <tr>
+                <td>{{ artist[0] }}</td>
+                <td>{{ artist[1] }}</td>
+                <td>{{ artist[2] }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+
+    <form id="myForm">
+        <label for="input1">Delete artist by ID:</label>
+        <input type="text" id="input1" name="input1">
+
+        <button type="submit">Submit</button>
+    </form>
+
+    <div id="response"></div>
+
+    <p><a href="/">< Return to Menu</a></p>
+
+    <script>
+        const form = document.getElementById('myForm');
+        const responseDiv = document.getElementById('response');
+
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const input1Value = document.getElementById('input1').value;
+
+            const serverUrl = '/viewart';
+            const formData = new FormData();
+
+            formData.append('input1', input1Value);
+
+            fetch(serverUrl, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.text())
+            .then(data => {
+                responseDiv.textContent = data;
+            })
+            .catch(error => {
+                responseDiv.textContent = 'Error: ' + error;
+            });
+        });
+    </script>
+{% endblock %}

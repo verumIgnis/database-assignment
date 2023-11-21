@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% block main %}
+<h1>Gallery Types</h1>
+    <table border="1">
+        <tr>
+            <th>Gallery Type ID</th>
+            <th>Gallery Type</th>
+        </tr>
+        {% for galleryType in galleryTypes %}
+        <tr>
+            <td>{{ galleryType[0] }}</td>
+            <td>{{ galleryType[1] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <form id="myForm">
+        <label for="input1">Delete gallery type by ID:</label>
+        <input type="text" id="input1" name="input1">
+
+        <button type="submit">Submit</button>
+    </form>
+
+    <div id="response"></div>
+
+    <p><a href="/">< Return to Menu</a></p>
+
+    <script>
+        const form = document.getElementById('myForm');
+        const responseDiv = document.getElementById('response');
+
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const input1Value = document.getElementById('input1').value;
+
+            const serverUrl = '/viewtyp';
+            const formData = new FormData();
+
+            formData.append('input1', input1Value);
+
+            fetch(serverUrl, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.text())
+            .then(data => {
+                responseDiv.textContent = data;
+            })
+            .catch(error => {
+                responseDiv.textContent = 'Error: ' + error;
+            });
+        });
+    </script>
+{% endblock %}

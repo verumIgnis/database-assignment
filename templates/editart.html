@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block main %}
+    <form id="myForm" class="center">
+        <label for="input1">Artist Surname</label>
+        <input type="text" id="input1" name="input1">
+
+        <label for="input2">Artist Initial:</label>
+        <input type="text" id="input2" name="input2">
+
+        <button type="submit">Submit</button>
+    </form>
+
+    <div id="response"></div>
+
+    <p><a href="/">< Return to Menu</a></p>
+
+    <script>
+        // Get the form element
+        const form = document.getElementById('myForm');
+        const responseDiv = document.getElementById('response');
+
+        // Add a submit event listener to the form
+        form.addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent the default form submission
+
+            // Get the input values
+            const input1Value = document.getElementById('input1').value;
+            const input2Value = document.getElementById('input2').value;
+
+            // You can replace this with your own server endpoint
+            const serverUrl = '/editart';
+
+            // Create a new FormData object
+            const formData = new FormData();
+            formData.append('input1', input1Value);
+            formData.append('input2', input2Value);
+
+            // Send the data to the server using a fetch request
+            fetch(serverUrl, {
+                method: 'POST', // You can change this to 'GET' if needed
+                body: formData
+            })
+            .then(response => response.text())
+            .then(data => {
+                responseDiv.textContent = data; // Display the server response
+            })
+            .catch(error => {
+                responseDiv.textContent = 'Error: ' + error;
+            });
+        });
+    </script>
+{% endblock %}

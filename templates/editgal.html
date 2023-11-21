@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block main %}
+    <form id="myForm" class="center">
+        <label for="input1">Gallery Name:</label>
+        <input type="text" id="input1" name="input1">
+
+        <label for="input2">Gallery Type ID:</label>
+        <input type="text" id="input2" name="input2">
+
+        <button type="submit">Submit</button>
+    </form>
+
+    <div id="response"></div>
+
+    <p><a href="/">< Return to Menu</a></p>
+
+    <script>
+        const form = document.getElementById('myForm');
+        const responseDiv = document.getElementById('response');
+
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const input1Value = document.getElementById('input1').value;
+            const input2Value = document.getElementById('input2').value;
+
+            const serverUrl = '/editgal';
+            const formData = new FormData();
+
+            formData.append('input1', input1Value);
+            formData.append('input2', input2Value);
+
+            fetch(serverUrl, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.text())
+            .then(data => {
+                responseDiv.textContent = data;
+            })
+            .catch(error => {
+                responseDiv.textContent = 'Error: ' + error;
+            });
+        });
+    </script>
+{% endblock %}
