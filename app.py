@@ -135,16 +135,28 @@ def editexh():
     if request.method == "POST":
         try:
             formData = request.form
-            validated = validation.exhibition(formData)
-            if validated is None:
-                conn = sqlite3.connect('database.db')
-                cursor = conn.cursor()
-                cursor.execute('INSERT INTO exhibitionTable (numDays, artistID, galleryID, startDate, predictedSales) VALUES (:input1, :input2, :input3, :input4, :input5)', formData)
-                conn.commit()
-                conn.close()
-                return "Success."
-            else:
-                return validated
+            if formData["input1"] == "" or formData["input2"] == "" or formData["input3"] == "" or formData[
+                "input4"] == "" or formData["input5"] == "":
+                return "All fields must be completed."
+            if int(formData["input1"]) > 10 or int(formData["input1"]) < 3:
+                return "An exhibition must be between 3 and 10 days long."
+            conn = sqlite3.connect('database.db')
+            cursor = conn.cursor()
+            cursor.execute('SELECT artistID FROM artistTable')
+            rows = cursor.fetchall()
+            conn.close()
+            valid = False
+            for row in rows:
+                if str(formData["input2"]) == str(row[0]):
+                    valid = True
+            if not valid:
+                return "Invalid Artist"
+            conn = sqlite3.connect('database.db')
+            cursor = conn.cursor()
+            cursor.execute('INSERT INTO exhibitionTable (numDays, artistID, galleryID, startDate, predictedSales) VALUES (:input1, :input2, :input3, :input4, :input5)', formData)
+            conn.commit()
+            conn.close()
+            return "Success."
         except Exception as e:
             return f"Error: {e}"
     return render_template('editexh.html')
