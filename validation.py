@@ -7,6 +7,16 @@ def exhibition(formData):
             return "All fields must be completed."
         if int(formData["input1"]) > 10 or int(formData["input1"]) < 3:
             return "An exhibition must be between 3 and 10 days long."
+        conn = sqlite3.connect('database.db')
+        cursor = conn.cursor()
+        cursor.execute('SELECT artistID FROM artistTable')
+        rows = cursor.fetchall()
+        conn.close()
+        for row in rows:
+            if str(formData["input2"]) == str(row[0]):
+                valid = True
+        if not valid:
+            return "Invalid Artist"
     except Exception as e:
         return e
 
