@@ -1,4 +1,4 @@
-SELECT galleryTable.galleryName, galleryTypeTable.galleryType, exhibitionTable.numDays
+SELECT galleryTable.galleryName, galleryTypeTable.galleryType, exhibitionTable.numDays, exhibitionTable.startDate, exhibitionTable.startDate
 FROM exhibitionTable
 JOIN galleryTable ON exhibitionTable.galleryID = galleryTable.galleryID
 JOIN galleryTypeTable ON galleryTable.galleryTypeID = galleryTypeTable.galleryTypeID

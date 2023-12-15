@@ -4,5 +4,5 @@ CASE galleryTable.galleryTypeID WHEN 1 THEN 0.4 * exhibitionTable.predictedSales
 FROM exhibitionTable
 JOIN artistTable ON exhibitionTable.artistID = artistTable.artistID
 JOIN galleryTable ON exhibitionTable.galleryID = galleryTable.galleryID
-JOIN galleryTypeTable ON galleryTable.galleryTypeID = galleryTypeTable.galleryTypeID;
-WHERE artistSurname = ?
+JOIN galleryTypeTable ON galleryTable.galleryTypeID = galleryTypeTable.galleryTypeID
+WHERE artistTable.artistID = :input1;

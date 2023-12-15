@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block main %}
+    <h1>Exhibition Report</h1>
+    <table border="1">
+        <tr>
+            <th>Gallery Name</th>
+            <th>Gallery Type</th>
+            <th>Number of Days</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+        </tr>
+        {% for exhibition in exhibitions %}
+            <tr>
+                <td>{{ exhibition[0] }}</td>
+                <td>{{ exhibition[1] }}</td>
+                <td>{{ exhibition[2] }}</td>
+                <td>{{ exhibition[3] }}</td>
+                <td>{{ exhibition[4] }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+    <p><a href="/">< Return to Menu</a></p>
+
+{% endblock %}

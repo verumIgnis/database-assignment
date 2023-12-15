@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block main %}
+    <h1>Revenue Report</h1>
+
+    <div id="response"></div>
+
+    <form id="myForm">
+        <label for="input1">Enter Artist ID:</label>
+        <input type="text" id="input1" name="input1">
+
+        <button type="submit">Submit</button>
+    </form>
+
+    <p><a href="/">< Return to Menu</a></p>
+
+    <script>
+        const form = document.getElementById('myForm');
+        const responseDiv = document.getElementById('response');
+
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const input1Value = document.getElementById('input1').value;
+
+            const serverUrl = '/rptrev';
+            const formData = new FormData();
+
+            formData.append('input1', input1Value);
+
+            fetch(serverUrl, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.text())
+            .then(data => {
+                responseDiv.innerHTML = data;
+            })
+            .catch(error => {
+                responseDiv.textContent = 'Error: ' + error;
+            });
+        });
+    </script>
+
+{% endblock %}

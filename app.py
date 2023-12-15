@@ -1,6 +1,8 @@
 import sqlite3
 import validation
 from flask import Flask, render_template, request, send_from_directory
+from datetime import datetime, timedelta
+import json
 
 app = Flask(__name__)
 
@@ -13,6 +15,38 @@ with open("queries/revenue.sql", "r") as file:
 @app.route('/')
 def index():
     return render_template('index.html')
+
+@app.route('/rptexh', methods=['GET'])
+def rptexh():
+    conn = sqlite3.connect('database.db')
+    cursor = conn.cursor()
+    cursor.execute(exhibitionsQuery)
+    rowsTuple = cursor.fetchall()
+    rows = [list(row) for row in rowsTuple]
+    conn.close()
+    for row in rows:
+        parsedDate = datetime.strptime(row[3], "%Y-%m-%d")
+        row[4] = parsedDate + timedelta(days=row[2])
+        row[4] = str(str(row[4])[:-9])
+    return render_template('rptexh.html', exhibitions=rows)
+
+@app.route('/rptrev', methods=['GET', 'POST'])
+def rptrev():
+    if request.method == "POST":
+        try:
+            formData = request.form
+            conn = sqlite3.connect('database.db')
+            cursor = conn.cursor()
+            cursor.execute(revenueQuery, formData)
+            rowsTuple = cursor.fetchall()
+            rows = [list(row) for row in rowsTuple]
+            conn.close()
+            for row in rows:
+                row[3] = "{:.2f}".format(row[3])
+            return render_template('rsprev.html', rows=rows)
+        except Exception as e:
+            return f"Error: {e}"
+    return render_template('rptrev.html')
 
 @app.route('/viewexh', methods=['GET', 'POST'])
 def viewexh():
@@ -41,7 +75,7 @@ def viewart():
             formData = request.form
             conn = sqlite3.connect('database.db')
             cursor = conn.cursor()
-            cursor.execute('DELETE FROM artustTable WHERE artistID = :input1', formData)
+            cursor.execute('DELETE FROM artistTable WHERE artistID = :input1', formData)
             conn.commit()
             conn.close()
             return "Success."
@@ -120,16 +154,16 @@ def editart():
     if request.method == "POST":
         try:
             formData = request.form
-            validated = validation.artist(formData)
-            if validated is None:
-                conn = sqlite3.connect('database.db')
-                cursor = conn.cursor()
-                cursor.execute('INSERT INTO artistTable (artistSurname, artistInitial) VALUES (:input1, :input2)', formData)
-                conn.commit()
-                conn.close()
-                return "Success."
-            else:
-                return validated
+            if formData["input1"] == "" or formData["input2"] == "":
+                return "All fields must be completed."
+            if not re.match("^[A-Z]{1}$", formData["input2"]):
+                return "Artist initial must be a single uppercase character."
+            conn = sqlite3.connect('database.db')
+            cursor = conn.cursor()
+            cursor.execute('INSERT INTO artistTable (artistSurname, artistInitial) VALUES (:input1, :input2)', formData)
+            conn.commit()
+            conn.close()
+            return "Success."
         except Exception as e:
             return f"Error: {e}"
     return render_template('editart.html')
@@ -139,6 +173,8 @@ def editgal():
     if request.method == "POST":
         try:
             formData = request.form
+            if formData["input1"] == "" or formData["input2"] == "":
+                return "All fields must be completed."
             conn = sqlite3.connect('database.db')
             cursor = conn.cursor()
             cursor.execute('INSERT INTO galleryTable (galleryName, galleryTypeID) VALUES (:input1, :input2)', formData)
@@ -154,6 +190,8 @@ def edittyp():
     if request.method == "POST":
         try:
             formData = request.form
+            if formData["input1"] == "":
+                return "All fields must be completed."
             conn = sqlite3.connect('database.db')
             cursor = conn.cursor()
             cursor.execute('INSERT INTO galleryTypeTable (galleryType) VALUES (:input1)', formData)
@@ -164,17 +202,6 @@ def edittyp():
             return f"Error: {e}"
     return render_template('edittyp.html')
 
-@app.route('/testform1', methods=['GET', 'POST'])
-def testform():
-    if request.method == 'POST':
-        input1 = request.form['input1']
-        input2 = request.form['input2']
-
-        concatenated = f"{input1} {input2}"
-
-        return concatenated
-
-    return render_template('testform1.html')
 
 @app.route('/<path:filename>')
 def webroot(filename):
