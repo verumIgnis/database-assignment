@@ -1,4 +1,5 @@
 import re
+import sqlite3
 
 def exhibition(formData):
     try:
@@ -20,8 +21,16 @@ def artist(formData):
 
 def gallery(formData):
     try:
+        conn = sqlite3.connect('database.db')
+        cursor = conn.cursor()
+        cursor.execute('SELECT galleryTypeID FROM galleryTypeTable')
+        rows = cursor.fetchall()
+        conn.close()
+        print(rows)
         if formData["input1"] == "" or formData["input2"] == "":
             return "All fields must be completed."
+        if formData["input1"] not in rows:
+            return "Invalid Gallery Type"
     except Exception as e:
         return e
 

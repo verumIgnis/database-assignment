@@ -173,8 +173,20 @@ def editgal():
     if request.method == "POST":
         try:
             formData = request.form
+            conn = sqlite3.connect('database.db')
+            cursor = conn.cursor()
+            cursor.execute('SELECT galleryTypeID FROM galleryTypeTable')
+            rows = cursor.fetchall()
+            conn.close()
+            print(rows)
             if formData["input1"] == "" or formData["input2"] == "":
                 return "All fields must be completed."
+            valid = False
+            for row in rows:
+                if str(formData["input2"]) == str(row[0]):
+                    valid = True
+            if not valid:
+                return "Invalid Gallery Type"
             conn = sqlite3.connect('database.db')
             cursor = conn.cursor()
             cursor.execute('INSERT INTO galleryTable (galleryName, galleryTypeID) VALUES (:input1, :input2)', formData)
